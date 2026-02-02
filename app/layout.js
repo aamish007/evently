@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
+import { ClerkProvider } from "@clerk/nextjs";
 export const metadata = {
   title: "evently",
   description: "At the centre of every event",
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            <ClerkProvider>
             <ConvexClientProvider>
         {/* Header */}
         <Header/>
@@ -38,6 +40,7 @@ export default function RootLayout({ children }) {
           </footer>
         </main>
         </ConvexClientProvider>
+        </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
