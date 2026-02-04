@@ -7,8 +7,10 @@ import React from 'react'
 import { Button } from './ui/button'
 import { Authenticated, Unauthenticated } from 'convex/react'
 import { BarLoader } from 'react-spinners'
+import { useStoreUser } from '@/hooks/use-store-user'
 
 const Header = () => {
+  const {isLoading}=useStoreUser();
   return (
     <>
                 <nav className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-xl z-20 border-b">
@@ -23,20 +25,20 @@ const Header = () => {
               priority
             />
             <div className='flex items-center'>
-              <Unauthenticated>
+              <SignedOut>
               <SignInButton mode='modal'>
                 <Button size="sm">Sign In</Button>
               </SignInButton>
-            </Unauthenticated>
-            <Authenticated>
+            </SignedOut>
+            <SignedIn>
               <UserButton />
-            </Authenticated>
+            </SignedIn>
             </div>
             </div>
             {/* Mobile Section */}
-            <div className='absolute bottom-0 left-0 w-full'>
+            {isLoading && (<div className='absolute bottom-0 left-0 w-full'>
               <BarLoader width={"100%"} color='#a855f7'/>
-            </div>
+            </div>)}
         </nav>
     </>
   )
