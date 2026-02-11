@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+/* import { mutation, query } from "./_generated/server";
 
 export const store = mutation({
   args: {},
@@ -51,4 +51,76 @@ export const getCurrentUser=query({
         if(!user) throw new Error("User not found")
         return user;
     }
-})
+}) */
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+
+/**
+ * Store the currently authenticated Clerk user in Convex DB.
+ * Uses identity.subject (stable Clerk user id), NOT tokenIdentifier.
+ */
+export const store = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Called storeUser without authentication present");
+    }
+
+    const clerkId = identity.subject; // ✅ STABLE ID
+
+    // Check if user already exists
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+      .unique();
+
+    if (user) {
+      if (
+        user.name !== identity.name ||
+        user.imageUrl !== identity.pictureUrl
+      ) {
+        await ctx.db.patch(user._id, {
+          name: identity.name ?? user.name,
+          imageUrl: identity.pictureUrl,
+          updatedAt: Date.now(),
+        });
+      }
+
+      return user._id;
+    }
+
+    // Otherwise create user
+    return await ctx.db.insert("users", {
+      clerkId,
+      name: identity.name ?? "Anonymous",
+      email: identity.email ?? "",
+      imageUrl: identity.pictureUrl,
+      hasCompletedOnboarding: false,
+      freeEventsCreated: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Get currently logged-in user from Convex DB
+ */
+export const getCurrentUser = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+
+    const clerkId = identity.subject;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+      .unique();
+
+    if (!user) return null;
+    return user;
+  },
+});

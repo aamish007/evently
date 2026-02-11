@@ -1,7 +1,8 @@
-// app/clerk-test/page.tsx
-import { auth } from '@clerk/nextjs/server';
+import { auth } from "@clerk/nextjs/server";
 
-export default async function Page() {
+export const runtime = "edge";
+
+export default function Page() {
   const { userId } = auth();
-  return <div>{userId ? 'CLERK WORKS' : 'CLERK NOT LOGGED IN'}</div>;
+  return <div>{userId ? "SERVER LOGGED IN" : "SERVER NOT LOGGED IN"}</div>;
 }
