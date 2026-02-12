@@ -7,7 +7,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import HeaderClient from "@/components/headerclient";
 export const metadata = {
   title: "evently",
   description: "At the centre of every event",
