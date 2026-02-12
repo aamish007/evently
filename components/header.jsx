@@ -12,7 +12,7 @@ import { Building, Plus, Ticket } from 'lucide-react'
 const Header = () => {
   const { isLoading } = useStoreUser();
   const [mounted, setMounted] = React.useState(false);
-  const [showUpgradeModel, setShowUpgradeModel]=useState();
+  const [showUpgradeModel, setShowUpgradeModel]=useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -33,7 +33,7 @@ const Header = () => {
           />
         </Link>
         <div className="flex items-center gap-2">
-          <Button variant={"ghost"} size="sm">Pricing</Button>
+          <Button variant={"ghost"} size="sm" onClick={()=>setShowUpgradeModel(true)}>Pricing</Button>
           <Button variant={"ghost"} size="sm" asChild className={"mr-2"}>
             <Link href="explore">Explore</Link>
             </Button>
