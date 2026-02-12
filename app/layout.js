@@ -1,12 +1,13 @@
 
 // import Header from "@/components/header";
-import HeaderClient from "@/components/headerclient";
+import Header from "@/components/header"
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import HeaderClient from "@/components/headerclient";
 export const metadata = {
   title: "evently",
   description: "At the centre of every event",
@@ -27,7 +28,7 @@ export default function RootLayout({ children }) {
             <ClerkProvider appearance={{theme: dark,}}>
             <ConvexClientProvider>
         {/* Header */}
-        <HeaderClient/>
+        <Header/>
         <main className="min-h-screen container mx-auto pt-40 md:pt-32 ">
           {/* Glow */}
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
