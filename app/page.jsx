@@ -28,7 +28,6 @@ export default function Home() {
             </Button>
             </Link>
           </div>
-          {/* right */}
           <div>
             <Image src="/hero.png" alt="hero image" width={700} height={700} className="w-full h-auto" priority/>
           </div>
