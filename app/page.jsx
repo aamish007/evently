@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {Link} from "next/link"
+import Link from "next/link"
 export default function Home() {
   return (
     <div>
@@ -28,6 +28,7 @@ export default function Home() {
             </Button>
             </Link>
           </div>
+          {/* right */}
           <div>
             <Image src="/hero.png" alt="hero image" width={700} height={700} className="w-full h-auto" priority/>
           </div>

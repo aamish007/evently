@@ -53,11 +53,10 @@ export const getCurrentUser=query({
     }
 }) */
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
 
 /**
  * Store the currently authenticated Clerk user in Convex DB.
- * Uses identity.subject (stable Clerk user id), NOT tokenIdentifier.
+ * Uses identity.subject (stable Clerk user id).
  */
 export const store = mutation({
   args: {},
@@ -68,14 +67,17 @@ export const store = mutation({
       throw new Error("Called storeUser without authentication present");
     }
 
-    const clerkId = identity.subject; // ✅ STABLE ID
+    const clerkId = identity.subject; // ✅ Stable Clerk user ID
 
     // Check if user already exists
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", clerkId)
+      )
       .unique();
 
+    // If user exists → update if needed
     if (user) {
       if (
         user.name !== identity.name ||
@@ -83,7 +85,7 @@ export const store = mutation({
       ) {
         await ctx.db.patch(user._id, {
           name: identity.name ?? user.name,
-          imageUrl: identity.pictureUrl,
+          imageUrl: identity.pictureUrl ?? user.imageUrl,
           updatedAt: Date.now(),
         });
       }
@@ -91,10 +93,10 @@ export const store = mutation({
       return user._id;
     }
 
-    // Otherwise create user
+    // Otherwise → create new user
     return await ctx.db.insert("users", {
-      clerkId,
       name: identity.name ?? "Anonymous",
+      tokenIdentifier: clerkId,   // ✅ FIXED (was clerkId ❌)
       email: identity.email ?? "",
       imageUrl: identity.pictureUrl,
       hasCompletedOnboarding: false,
@@ -109,6 +111,7 @@ export const store = mutation({
  * Get currently logged-in user from Convex DB
  */
 export const getCurrentUser = query({
+  args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return null;
@@ -117,10 +120,11 @@ export const getCurrentUser = query({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", clerkId)
+      )
       .unique();
 
-    if (!user) return null;
-    return user;
+    return user ?? null;
   },
 });

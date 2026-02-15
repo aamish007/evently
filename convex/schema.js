@@ -1,13 +1,11 @@
-import { Description } from "@radix-ui/react-dialog";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    // 🔑 Stable Clerk user id
-    clerkId: v.string(),
 
     name: v.string(),
+    tokenIdentifier: v.string(),
     email: v.string(),
     imageUrl: v.optional(v.string()),
 
@@ -26,7 +24,7 @@ export default defineSchema({
 
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_clerkId", ["clerkId"]),
+  }).index("by_token", ["tokenIdentifier"]),
 
   events: defineTable({
     title: v.string(),
@@ -34,14 +32,14 @@ export default defineSchema({
     slug: v.string(),
 
     //organisers
-    organiserId: v.id("users"),
-    organiserName: v.string(),
+    organizerId: v.id("users"),
+    organizerName: v.string(),
 
     category: v.string(),
     tags: v.array(v.string()),
 
-    startTime: v.number(),
-    endTime: v.number(),
+    startDate: v.number(),
+    endDate: v.number(),
     timezone: v.string(),
 
     locationType: v.union(v.literal("physical"), v.literal("online")),
@@ -49,6 +47,7 @@ export default defineSchema({
     address: v.optional(v.string()),
     city: v.string(),
     state: v.optional(v.string()),
+    country: v.string(),
 
     capacity: v.number(),
     ticketType: v.union(v.literal("free"),v.literal("paid")),
@@ -60,7 +59,7 @@ export default defineSchema({
 
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_organizer", ["organiserId"])
+  }).index("by_organizer", ["organizerId"])
   .index("by_category", ["category"])
   .index("by_start_date", ["startDate"])
   .index("by_slug", ["slug"])
